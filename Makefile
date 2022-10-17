@@ -1,7 +1,7 @@
 DEBUG = 0
 GIT_VERSION := " $(shell git rev-parse --short HEAD)"
 HAS_GCC = 1
-HAS_CLIPBOARD_LIB = 1
+HAS_CLIPBOARD_LIB = 0
 
 SPACE :=
 SPACE := $(SPACE) $(SPACE)
