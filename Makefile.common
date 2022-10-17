@@ -1,0 +1,171 @@
+SOURCE_DIR := $(CORE_DIR)/source
+LIBRETRO_DIR := $(SOURCE_DIR)/frontends/libretro
+INCFLAGS += -I$(CORE_DIR)/zip_lib
+INCFLAGS += -I$(SOURCE_DIR)
+INCFLAGS += -I$(SOURCE_DIR)/Debugger
+INCFLAGS += -I$(SOURCE_DIR)/linux/libwindows
+INCFLAGS += -I$(LIBRETRO_DIR) -I$(LIBRETRO_DIR)/libretro-common/include -I/usr/local/include
+
+ifneq (,$(findstring msvc2003,$(platform)))
+INCFLAGS += -I$(LIBRETRO_COMM_DIR)/include/compat/msvc
+endif
+
+# Core
+  SOURCES_CXX += $(SOURCE_DIR)/Debugger/Debug.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Debugger/Debugger_Help.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Debugger/Debugger_Color.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Debugger/Debugger_Disassembler.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Debugger/Debugger_Symbols.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Debugger/Debugger_DisassemblerData.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Debugger/Debugger_Console.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Debugger/Debugger_Assembler.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Debugger/Debugger_Parser.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Debugger/Debugger_Range.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Debugger/Debugger_Commands.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Debugger/Util_MemoryTextFile.cpp
+
+# SOURCES_CXX += $(SOURCE_DIR)/Tfe/tfearch.cpp
+# SOURCES_CXX += $(SOURCE_DIR)/Tfe/tfesupp.cpp
+# SOURCES_CXX += $(SOURCE_DIR)/Tfe/NetworkBackend.cpp
+# SOURCES_CXX += $(SOURCE_DIR)/Tfe/PCapBackend.cpp
+# SOURCES_CXX += $(SOURCE_DIR)/Tfe/IPRaw.cpp
+# SOURCES_CXX += $(SOURCE_DIR)/Tfe/DNS.cpp
+# SOURCES_CXX += $(SOURCE_DIR)/Uthernet1.cpp
+# SOURCES_CXX += $(SOURCE_DIR)/Uthernet2.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/StrFormat.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/6522.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/VidHD.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/SSI263.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Speaker.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/SoundCore.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/AY8910.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Mockingboard.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Pravets.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/YamlHelper.cpp
+ SOURCES_CXX += $(SOURCE_DIR)/Log.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Disk.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/DiskFormatTrack.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/DiskImage.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/DiskImageHelper.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Harddisk.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Memory.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/CPU.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/6821.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/NoSlotClock.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/SAM.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/z80emu.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/ParallelPrinter.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/MouseInterface.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/LanguageCard.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/RGBMonitor.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/NTSC.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/NTSC_CharSet.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Card.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/CardManager.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Disk2CardManager.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Riff.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/SaveState.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/SynchronousEventManager.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Video.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Core.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Utilities.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/FrameBase.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/CmdLine.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/DiskSet.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/wavepcm.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/loadfile.cpp
+  #SOURCES_CXX += $(SOURCE_DIR)/unzip.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/unzipmem.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/inflate.cpp
+
+  SOURCES_CXX += $(SOURCE_DIR)/Configuration/PropertySheetHelper.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Configuration/Config.cpp
+
+  SOURCES_CXX += $(SOURCE_DIR)/linux/resources.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/benchmark.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/paddle.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/version.cpp
+  #SOURCES_CXX += $(SOURCE_DIR)/linux/registry.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/keyboard.cpp
+  #SOURCES_CXX += $(SOURCE_DIR)/linux/linuxframe.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/context.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/tape.cpp
+ #SOURCES_CXX += $(SOURCE_DIR)/linux/network/slirp2.cpp
+
+  SOURCES_CXX += $(SOURCE_DIR)/linux/duplicates/Debugger_Display.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/duplicates/Debugger_Win32.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/duplicates/Joystick.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/duplicates/SerialComms.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/duplicates/PropertySheet.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/duplicates/Registry.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/duplicates/FourPlay.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/duplicates/SNESMAX.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/duplicates/Keyboard.cpp
+
+  SOURCES_CXX += $(SOURCE_DIR)/Z80VICE/z80.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Z80VICE/z80mem.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/Z80VICE/daa.cpp
+
+# linux libwindows
+  SOURCES_CXX += $(SOURCE_DIR)/linux/libwindows/dmusicc.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/libwindows/dsound.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/libwindows/fileapi.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/libwindows/guiddef.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/libwindows/winhandles.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/libwindows/misc.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/libwindows/strsafe.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/libwindows/winstrings.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/libwindows/timeapi.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/libwindows/winbase.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/libwindows/winnls.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/linux/libwindows/winuser.cpp
+
+# libretro
+  SOURCES_CXX += $(LIBRETRO_DIR)/environment.cpp
+  SOURCES_CXX += $(LIBRETRO_DIR)/libretro.cpp
+  SOURCES_CXX += $(LIBRETRO_DIR)/game.cpp
+  SOURCES_CXX += $(LIBRETRO_DIR)/joypadbase.cpp
+  SOURCES_CXX += $(LIBRETRO_DIR)/joypad.cpp
+  SOURCES_CXX += $(LIBRETRO_DIR)/mouse.cpp
+  SOURCES_CXX += $(LIBRETRO_DIR)/analog.cpp
+  SOURCES_CXX += $(LIBRETRO_DIR)/rdirectsound.cpp
+  SOURCES_CXX += $(LIBRETRO_DIR)/retroregistry.cpp
+  SOURCES_CXX += $(LIBRETRO_DIR)/retroframe.cpp
+  SOURCES_CXX += $(LIBRETRO_DIR)/diskcontrol.cpp
+  SOURCES_CXX += $(LIBRETRO_DIR)/serialisation.cpp
+ifeq ($(HAS_CLIPBOARD_LIB),1)
+  SOURCES_CXX += $(LIBRETRO_DIR)/clipboard.cpp
+else
+  SOURCES_CXX += $(LIBRETRO_DIR)/dummy_clipboard.cpp
+endif
+# frontends lib
+  SOURCES_CXX += $(SOURCE_DIR)/frontends/common2/commonframe.cpp
+  #SOURCES_CXX += $(SOURCE_DIR)/frontends/common2/gnuframe.cpp
+  #SOURCES_CXX += $(SOURCE_DIR)/frontends/common2/fileregistry.cpp
+  #SOURCES_CXX += $(SOURCE_DIR)/frontends/common2/ptreeregistry.cpp
+  #SOURCES_CXX += $(SOURCE_DIR)/frontends/common2/programoptions.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/frontends/common2/utils.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/frontends/common2/timer.cpp
+  SOURCES_CXX += $(SOURCE_DIR)/frontends/common2/speed.cpp
+
+# extra libtries
+#  SOURCES_C += $(CORE_DIR)/zip_lib/ioapi.c
+#  SOURCES_C += $(CORE_DIR)/zip_lib/iowin32.c
+#  SOURCES_C += $(CORE_DIR)/zip_lib/mztools.c
+#  SOURCES_C += $(CORE_DIR)/zip_lib/unzip.c
+#  SOURCES_C += $(CORE_DIR)/zip_lib/zip.c 
+
+# Libraries
+ifneq ($(platform), osx)
+LIBS += -static 
+endif
+LIBS += -lminizip -lyaml -lZ
+ifeq ($(HAS_CLIPBOARD_LIB),1)
+LIBS += -lclip
+ifeq ($(platform), win)
+LIBS += -lwindowscodecs -lole32 -lshlwapi
+endif
+ifeq ($(platform), osx)
+LIBS += -Xlinker -framework -Xlinker Cocoa
+endif
+endif

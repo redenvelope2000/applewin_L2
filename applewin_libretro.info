@@ -1,0 +1,30 @@
+# Software Information
+display_name = "AppleWin"
+categories = "Emulator"
+authors = "Michael O'Brien|Oliver Schmidt|Tom Charlesworth|Michael Pohoreski|Andrea Amedeo"
+corename = "AppleWin"
+supported_extensions = "do|dsk|nib|po|gz|woz|zip|2mg|2img|hdv|yaml|m3u|set"
+permissions = ""
+
+# Hardware Information
+manufacturer = "Apple Computer"
+systemname = "Apple II"
+systemid = "applewin"
+
+# Libretro Features
+savestate = "true"
+savestate_features = "serialized"
+cheats = "false"
+input_descriptors = "true"
+memory_descriptors = "false"
+libretro_saves = "true"
+core_options = "true"
+core_options_version = "1.0"
+load_subsystem = "false"
+supports_no_game = "true"
+hw_render = "false"
+needs_fullpath = "false"
+disk_control = "false"
+is_experimental = "true"
+
+description = "Originally windows-based AppleWin emulator for the RetroArch."

@@ -1,0 +1,3 @@
+rm ~/Documents/RetroArch/cores/applewin_libretro.dylib
+cp applewin_libretro.dylib ~/Documents/RetroArch/cores
+
