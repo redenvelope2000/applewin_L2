@@ -1,0 +1,159 @@
+# from build folder
+# valgrind --suppressions=../source/linux/suppressions.txt --gen-suppressions=all --leak-check=full ./sa2
+
+# for sa2
+{
+   Intel Addr2
+   Memcheck:Addr2
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+}
+
+{
+   Intel Addr4
+   Memcheck:Addr4
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+}
+
+{
+   Intel Addr8
+   Memcheck:Addr8
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+}
+
+{
+   PA Cond
+   Memcheck:Cond
+   fun:pa_shm_cleanup
+   fun:pa_shm_create_rw
+   fun:pa_mempool_new
+   fun:pa_context_new_with_proplist
+}
+
+{
+   X Param
+   Memcheck:Param
+   writev(vector[...])
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0
+}
+
+# for qapple
+
+{
+   Intel Addr1
+   Memcheck:Addr1
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+}
+
+# leaks
+
+{
+   Leak i965 calloc
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+}
+
+{
+   Leak i965 malloc
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+}
+
+{
+   Leak i965 realloc
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:realloc
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+}
+
+{
+   SDL Locale
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_XlcDefaultMapModifiers
+   fun:XSetLocaleModifiers
+}
+
+{
+   GL misc 1
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   ...
+   fun:__glDispatchRegisterStubCallbacks
+}
+
+{
+   GL misc 2
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   ...
+   fun:__glDispatchInit
+}
+
+{
+   X leak 1
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:XSetLocaleModifiers
+}
+
+{
+   X leak 2
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:XInitThreads
+}
+
+{
+   X leak 3
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_XOpenLC
+}
+
+{
+   Pulse leak 1
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:pa_xmalloc
+}
+
+{
+   Pulse leak 2
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:pa_xmalloc0
+}
+
+{
+   dlopen leak 1
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:dlopen_doit
+}
+
+{
+   dbus leak 2
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:dbus_bus_register
+}
