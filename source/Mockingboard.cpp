@@ -665,10 +665,14 @@ void poll_mockingboard (int samples, int16_t *buffer)
 		else if(nDataR > nWaveDataMax)
 			nDataR = nWaveDataMax;
 
-    Audio_Mix16 (buffer[i*2], (short)nDataL);
-    Audio_Mix16 (buffer[i*2+1], (short)nDataR);
+		Audio_Mix16 (buffer[i*2], (short)nDataL);
+		Audio_Mix16 (buffer[i*2+1], (short)nDataR);
 		//buffer[i*g_nMB_NumChannels+0] = (short)nDataL;	// L
 		//buffer[i*g_nMB_NumChannels+1] = (short)nDataR;	// R
+	}
+	
+	for (UINT i=0; i<NUM_AY8910; i++) {
+		g_MB[i].ssi263.poll_ssi263(nNumSamples, buffer);
 	}
 
 }
@@ -681,7 +685,7 @@ static void MB_Update(void)
 	PerfMarker perfMarker(!IsAnyTimer1Active() ? g_timeMB_NoTimer : g_timeMB_Timer);
 #endif
 
-	//nao-MB_UpdateInt();
+	//MB_UpdateInt();
 }
 
 //-----------------------------------------------------------------------------

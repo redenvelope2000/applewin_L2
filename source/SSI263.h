@@ -76,6 +76,8 @@ public:
 	void Update(void);
 	void SetSpeechIRQ(void);
 
+  void poll_ssi263 (int samples, int16_t *buffer);
+
 	void Votrax_Write(BYTE nValue);
 	bool GetVotraxPhoneme(void) { return m_isVotraxPhoneme; }
 	void SetVotraxPhoneme(bool value) { m_isVotraxPhoneme = value; }

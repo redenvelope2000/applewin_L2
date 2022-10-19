@@ -38,6 +38,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SSI263Phonemes.h"
 
 #include "YamlHelper.h"
+#include "Core.h"
 
 #define LOG_SSI263 0
 #define LOG_SSI263B 0	// Alternate SSI263 logging (use in conjunction with CPU.cpp's LOG_IRQ_TAKEN_AND_RTI)
@@ -286,6 +287,7 @@ const BYTE SSI263::m_Votrax2SSI263[/*64*/] =
 
 void SSI263::Votrax_Write(BYTE value)
 {
+  ra2::log_cb(RETRO_LOG_INFO, "RA2: %s - %d\n", __FUNCTION__, value);
 #if LOG_SC01
 	LogOutput("SC01: %02X (= SSI263: %02X)\n", value, m_Votrax2SSI263[value & PHONEME_MASK]);
 #endif
@@ -342,13 +344,14 @@ void SSI263::Play(unsigned int nPhoneme)
 	m_phonemePlaybackAndDebugger = (g_nAppMode == MODE_STEPPING || g_nAppMode == MODE_DEBUG);
 	m_phonemeCompleteByFullSpeed = false;
 
-	if (bPause)
+  ra2::log_cb(RETRO_LOG_INFO, "RA2: %s %llx - phoneme=%d len=%d, DUR=%d\n", __FUNCTION__, this, nPhoneme, m_phonemeLengthRemaining, m_durationPhoneme>>6);
+  if (bPause)
 	{
 		if (!m_pPhonemeData00)
 		{
 			// 'pause' length is length of 1st phoneme (arbitrary choice, since don't know real length)
-			m_pPhonemeData00 = new short [m_phonemeLengthRemaining];
-			memset(m_pPhonemeData00, 0x00, m_phonemeLengthRemaining*sizeof(short));
+			m_pPhonemeData00 = new short [4096];//m_phonemeLengthRemaining];
+			memset(m_pPhonemeData00, 0x00, 4096*2);//m_phonemeLengthRemaining*sizeof(short));
 		}
 
 		m_pPhonemeData = m_pPhonemeData00;
@@ -357,7 +360,7 @@ void SSI263::Play(unsigned int nPhoneme)
 	{
 		m_pPhonemeData = (const short*) &g_nPhonemeData[g_nPhonemeInfo[nPhoneme].nOffset];
 	}
-
+  
 	m_currSampleSum = 0;
 	m_currNumSamples = 0;
 	m_currSampleMod4 = 0;
@@ -646,6 +649,86 @@ void SSI263::Update(void)
 	}
 }
 
+//---------------------------------------------------------------------
+void Audio_Mix16 (INT16 &a, INT16 b);
+void SSI263::poll_ssi263 (int samples, int16_t *buffer)
+{
+	//-------------
+	//UpdateAccurateLength();
+
+	if (!SSI263SingleVoice.bActive)
+		return;
+  
+	const double amplitude = !m_isVotraxPhoneme ? (double)(m_ctrlArtAmp & AMPLITUDE_MASK) / (double)AMPLITUDE_MASK : 1.0;
+
+	bool bSpeechIRQ = false;
+
+	{
+		const BYTE DUR = 1;//m_durationPhoneme >> DURATION_SHIFT;
+		const BYTE numSamplesToAvg = (DUR <= 1) ? 1 : (DUR == 2) ? 2 :  4;
+
+		int nNumSamples = samples/2;
+		short* pMixBuffer = &m_mixBufferSSI263[0];
+		int zeroSize = nNumSamples;
+
+		if (m_phonemeLengthRemaining)// && !prefillBufferOnInit)
+		{
+			UINT samplesWritten = 0;
+			while (samplesWritten < (UINT)nNumSamples)
+			{
+				double sample = (double)*m_pPhonemeData * amplitude;
+				m_currSampleSum += (int)sample;
+				m_currNumSamples++;
+
+				m_pPhonemeData++;
+				m_phonemeLengthRemaining--;
+
+				if (m_currNumSamples == numSamplesToAvg)
+				{
+					*pMixBuffer++ = (short)(m_currSampleSum / numSamplesToAvg);
+					samplesWritten++;
+					m_currSampleSum = 0;
+					m_currNumSamples = 0;
+				}
+
+				m_currSampleMod4 = (m_currSampleMod4 + 1) & 3;
+				if (DUR == 1 && m_currSampleMod4 == 3 && m_phonemeLengthRemaining)
+				{
+					m_pPhonemeData++;
+					m_phonemeLengthRemaining--;
+				}
+				
+				if (!m_phonemeLengthRemaining)
+				{
+					bSpeechIRQ = true;
+					break;
+				}
+			}
+
+			zeroSize = nNumSamples - samplesWritten + 1;
+			_ASSERT(zeroSize >= 0);
+		}
+
+		if (zeroSize)
+			memset(pMixBuffer, 0, zeroSize * sizeof(short));
+	}
+	
+	if (bSpeechIRQ)
+	{
+	  //ra2::log_cb(RETRO_LOG_INFO, "RA2: %s - IRQ\n", __FUNCTION__ );
+		// NB. if m_phonemePlaybackAndDebugger==true, then "m_phonemeAccurateLengthRemaining!=0" must be true.
+		// Since in UpdateAccurateLength(), (when m_phonemePlaybackAndDebugger==true) then m_phonemeAccurateLengthRemaining decs to zero.
+		//if (!m_phonemePlaybackAndDebugger /*|| m_phonemeAccurateLengthRemaining*/)	// superfluous, so commented out (see above)
+			UpdateIRQ();
+	}
+
+	for (int i = 0; i<samples; i++) {
+    Audio_Mix16 (buffer[i*2], (short)m_mixBufferSSI263[i/2]);
+    Audio_Mix16 (buffer[i*2+1], (short)m_mixBufferSSI263[i/2]);
+	}
+	
+}
+
 //-----------------------------------------------------------------------------
 
 // The primary way for phonemes to generate IRQ is via the ring-buffer in Update(),
@@ -834,7 +917,7 @@ void SSI263::PeriodicUpdate(UINT executedCycles)
 
 	m_cyclesThisAudioFrame %= kCyclesPerAudioFrame;
 
-	Update();
+	//Update();
 }
 
 //=============================================================================
