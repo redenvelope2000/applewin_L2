@@ -21,10 +21,11 @@ Internal debugger (of course!). Hit F7 to enter it.
 Mockingboard PSG sounds.
 DISK II floppy drive operating sounds.
 Clipboard operation for text strings and the graphics screen. Use Ctrl/Shift-Ins on Windows, Cmd-C/Cmd-V on macOS.
+Save/Restore.
 
 Not-working functions:
 Uthernet
 Apple mouse
 Apple clock
-Mockingboard speech
+
 
