@@ -178,8 +178,8 @@ namespace ra2
   	  "diskette_out.wav",           //04 
   	  "diskette_out_in.wav",        //05 
   	  NULL};
-  	std::string pcm_wave_resource_file("resource.zip");
-  	pcm_wave_resource_file = myFrame->getResourcePath(pcm_wave_resource_file);
+  	//std::string pcm_wave_resource_file("resource.zip");
+  	//pcm_wave_resource_file = myFrame->getResourcePath(pcm_wave_resource_file);
   	init_wave_pcm (wave_file_names, "resource.zip");//pcm_wave_resource_file.c_str());
 
     SetFrame(myFrame);

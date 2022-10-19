@@ -19,6 +19,7 @@ namespace
   // we can only run 1 generator at a time
   // 1 is for speaker (2 would be Mockingboard)
   const size_t ourChannels = 1;
+  const size_t ourSR = 44100;
 
   class DirectSoundGenerator
   {
@@ -30,8 +31,8 @@ namespace
     bool isRunning() const;
     size_t getNumberOfChannels() const;
 
-  private:
     IDirectSoundBuffer * myBuffer;
+  private:
 
     std::vector<int16_t> myMixerBuffer;
 
@@ -197,10 +198,15 @@ namespace ra2
 
   void writeAudio(const size_t nsamples, bool silence_flag)
   {
-    const auto generator = findRunningGenerator(ourChannels);
-    if (generator)
+    // Find out the Speaker buffer and write to it.
+    for (auto & it : activeSoundGenerators)
     {
-      generator->writeAudio(nsamples, silence_flag);
+      const std::shared_ptr<DirectSoundGenerator> & generator = it.second;
+      if (generator->isRunning() && generator->getNumberOfChannels() == ourChannels && generator->myBuffer->sampleRate == ourSR)
+      {
+        generator->writeAudio(nsamples, silence_flag);
+        break;
+      }
     }
   }
 
