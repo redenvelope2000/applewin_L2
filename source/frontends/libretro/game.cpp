@@ -404,35 +404,35 @@ namespace ra2
     _update_key_modifiers (keycode, true);
     
     switch (keycode) {
-      case RETROK_z:
+      //case RETROK_z:
       case RETROK_RALT:
-        Paddle::setButtonPressed(Paddle::ourSolidApple);
+        if (Paddle::instance) Paddle::setButtonPressed(Paddle::ourSolidApple);
         break;
-      case RETROK_x:
+      //case RETROK_x:
       case RETROK_LMETA:
       case RETROK_RMETA:
       case RETROK_LALT:
-        Paddle::setButtonPressed(Paddle::ourOpenApple);
+        if (Paddle::instance) Paddle::setButtonPressed(Paddle::ourOpenApple);
         break;
       case RETROK_UP:
       case RETROK_KP8:
         direction_keys_pressed[0] = 1;
-        Paddle::instance->putAxis(1, -1.0);
+        if (Paddle::instance) Paddle::instance->putAxis(1, -1.0);
         break;
       case RETROK_DOWN:
       case RETROK_KP2:
         direction_keys_pressed[1] = 1;
-        Paddle::instance->putAxis(1, 1.0);
+        if (Paddle::instance) Paddle::instance->putAxis(1, 1.0);
         break;
       case RETROK_LEFT:
       case RETROK_KP4:  
         direction_keys_pressed[2] = 1;
-        Paddle::instance->putAxis(0, -1.0);
+        if (Paddle::instance) Paddle::instance->putAxis(0, -1.0);
         break;
       case RETROK_RIGHT:
       case RETROK_KP6:  
         direction_keys_pressed[3] = 1;
-        Paddle::instance->putAxis(0, 1.0);
+        if (Paddle::instance) Paddle::instance->putAxis(0, 1.0);
         break;
     }
     
@@ -505,15 +505,15 @@ namespace ra2
     _update_key_modifiers (keycode, false);
     log_cb(RETRO_LOG_INFO, "RA2: %s - keycode %d\n", __FUNCTION__, keycode);
     switch (keycode) {
-      case RETROK_z:
+      //case RETROK_z:
       case RETROK_RALT:
-        Paddle::setButtonReleased(Paddle::ourSolidApple);
+        if (Paddle::instance) Paddle::setButtonReleased(Paddle::ourSolidApple);
         break;
-      case RETROK_x:
+      //case RETROK_x:
       case RETROK_LMETA:
       case RETROK_RMETA:
       case RETROK_LALT:
-        Paddle::setButtonReleased(Paddle::ourOpenApple);
+        if (Paddle::instance) Paddle::setButtonReleased(Paddle::ourOpenApple);
         break;
       case RETROK_UP:
       case RETROK_KP8:
@@ -532,8 +532,8 @@ namespace ra2
         direction_keys_pressed[3] = 0;
         break;
     }
-    if (!direction_keys_pressed[0] && !direction_keys_pressed[1]) Paddle::instance->putAxis(1, 0.0);
-    if (!direction_keys_pressed[2] && !direction_keys_pressed[3]) Paddle::instance->putAxis(0, 0.0);
+    if (!direction_keys_pressed[0] && !direction_keys_pressed[1] && Paddle::instance) Paddle::instance->putAxis(1, 0.0);
+    if (!direction_keys_pressed[2] && !direction_keys_pressed[3] && Paddle::instance) Paddle::instance->putAxis(0, 0.0);
   }
 
   bool Game::checkButtonPressed(unsigned id)
