@@ -44,7 +44,7 @@ namespace ra2
     bool caps_lock_down = KeybGetCapsStatus ();
     bool meta_down = KeybGetMetaStatus ();
     
-    if (keycode >= RETROK_a && ch <= RETROK_z) {
+    if (keycode >= RETROK_a && keycode <= RETROK_z) {
       if (ctrl_down) {
         ch = (keycode - RETROK_a) + 0x01; // Ctrl-A till Ctrl-Z.
       } else {
