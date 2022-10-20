@@ -405,13 +405,13 @@ namespace ra2
     
     switch (keycode) {
       case RETROK_z:
-      case RETROK_LALT:
+      case RETROK_RALT:
         Paddle::setButtonPressed(Paddle::ourSolidApple);
         break;
       case RETROK_x:
       case RETROK_LMETA:
       case RETROK_RMETA:
-      case RETROK_RALT:
+      case RETROK_LALT:
         Paddle::setButtonPressed(Paddle::ourOpenApple);
         break;
       case RETROK_UP:
@@ -506,13 +506,13 @@ namespace ra2
     log_cb(RETRO_LOG_INFO, "RA2: %s - keycode %d\n", __FUNCTION__, keycode);
     switch (keycode) {
       case RETROK_z:
-      case RETROK_LALT:
+      case RETROK_RALT:
         Paddle::setButtonReleased(Paddle::ourSolidApple);
         break;
       case RETROK_x:
       case RETROK_LMETA:
       case RETROK_RMETA:
-      case RETROK_RALT:
+      case RETROK_LALT:
         Paddle::setButtonReleased(Paddle::ourOpenApple);
         break;
       case RETROK_UP:
