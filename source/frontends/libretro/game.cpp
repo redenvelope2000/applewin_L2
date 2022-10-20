@@ -120,6 +120,7 @@ namespace ra2
         break;
       case RETROK_F7:  // Enter debugger key
       case RETROK_MENU:
+      //case RETROK_RMETA:
         log_cb(RETRO_LOG_INFO, "RA2: %s - add F7 debug key\n", __FUNCTION__);
         putKeyInBuffer(VK_DEBUG);
         return true;
@@ -404,11 +405,13 @@ namespace ra2
     
     switch (keycode) {
       case RETROK_z:
-      case RETROK_LEFTBRACKET:
+      case RETROK_LALT:
         Paddle::setButtonPressed(Paddle::ourSolidApple);
         break;
       case RETROK_x:
-      case RETROK_RIGHTBRACKET:
+      case RETROK_LMETA:
+      case RETROK_RMETA:
+      case RETROK_RALT:
         Paddle::setButtonPressed(Paddle::ourOpenApple);
         break;
       case RETROK_UP:
@@ -503,11 +506,13 @@ namespace ra2
     log_cb(RETRO_LOG_INFO, "RA2: %s - keycode %d\n", __FUNCTION__, keycode);
     switch (keycode) {
       case RETROK_z:
-      case RETROK_LEFTBRACKET:
+      case RETROK_LALT:
         Paddle::setButtonReleased(Paddle::ourSolidApple);
         break;
       case RETROK_x:
-      case RETROK_RIGHTBRACKET:  
+      case RETROK_LMETA:
+      case RETROK_RMETA:
+      case RETROK_RALT:
         Paddle::setButtonReleased(Paddle::ourOpenApple);
         break;
       case RETROK_UP:
