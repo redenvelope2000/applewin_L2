@@ -356,6 +356,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 	static bool      g_bIgnoreNextKey = false;
 
 	static WORD g_LBR = 0x0000;	// Last Branch Record
+	static WORD g_OLDPC = 0x0000; // Previous PC
 
 	static bool g_bScriptReadOk = false;
 
@@ -2436,7 +2437,7 @@ Update_t CmdOut (int nArgs)
 //===========================================================================
 Update_t CmdLBR(int nArgs)
 {
-	ConsolePrintFormat(" LBR = $%04X", g_LBR);
+	ConsolePrintFormat(" LBR = $%04X OLDPC = $%04X", g_LBR, g_OLDPC);
 	return ConsoleUpdate();
 }
 
@@ -2581,6 +2582,14 @@ Update_t CmdConfigLoad (int nArgs)
 	  strcpy ( sFilename, g_sFileNameConfig.c_str() );
 	}
 
+	// Load SYMUSER.
+	char *symbol_file_name = new char[MAX_PATH];
+	strcpy (symbol_file_name, g_sUserDocDir.c_str());
+	strcat (symbol_file_name, sFilename);
+	strcat (symbol_file_name, ".SYM");
+	SymbolsLoad ( symbol_file_name, CMD_SYMBOLS_USER_1 );
+	delete[] symbol_file_name;
+
 	return GenericLoadDebugData (sFilename);
 }
 
@@ -2714,6 +2723,12 @@ Update_t CmdConfigSave (int nArgs)
 	//CmdColorSave( 0 );
 
 	// UserSymbol
+	char *symbol_file_name = new char[MAX_PATH];
+	strcpy (symbol_file_name, g_sUserDocDir.c_str());
+	strcat (symbol_file_name, sFilename);
+	strcat (symbol_file_name, ".SYM");
+	SymbolsSave ( symbol_file_name, CMD_SYMBOLS_USER_1 );
+	delete[] symbol_file_name;
 
 	// History
 
@@ -8802,6 +8817,7 @@ void DebugContinueStepping(const bool bCallerWillUpdateDisplay/*=false*/)
 		{
 			UpdateLBR();
 			const WORD oldPC = regs.pc;
+			g_OLDPC = oldPC;
 
 			SingleStep(g_bGoCmd_ReinitFlag);
 
@@ -9137,6 +9153,7 @@ void DebugReset(void)
 {
 	g_videoScannerDisplayInfo.Reset();
 	g_LBR = 0x0000;
+	g_OLDPC = 0x0000;
 }
 
 // Add character to the input line

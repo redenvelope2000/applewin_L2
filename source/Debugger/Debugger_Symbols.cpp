@@ -1040,6 +1040,37 @@ Update_t CmdSymbolsCommand (int nArgs)
 }
 
 //===========================================================================
+void SymbolsLoad (char *sFileName, int SymbolTable)
+{
+  int iSymbolTable = SymbolTable - CMD_SYMBOLS_ROM;
+	unsigned int nOffsetAddr = 0;
+	int nSymbols = ParseSymbolTable( sFileName, (SymbolTable_Index_e) iSymbolTable, nOffsetAddr );
+	if ( nSymbols > 0 )
+	{
+		g_nSymbolsLoaded = nSymbols;
+	}
+}
+
+void SymbolsSave (char *sFileName, int SymbolTable)
+{
+  int iSymbolTable = SymbolTable - CMD_SYMBOLS_ROM;
+	FILE *outf = fopen (sFileName, "wt");
+	int nSymbols = g_aSymbols[iSymbolTable].size();
+	if (outf && nSymbols)
+	{
+		fprintf (outf, "; %s : %d symbols defined.\n", sFileName, nSymbols);
+		SymbolTable_t :: iterator  iSymbol = g_aSymbols[iSymbolTable].begin();
+		while (iSymbol != g_aSymbols[iSymbolTable].end())
+		{
+			const char *pSymbol = iSymbol->second.c_str();
+			unsigned short nAddress = iSymbol->first;
+			fprintf (outf, "%04X %s\n", nAddress&0xffff, pSymbol);
+			++iSymbol;
+		}
+		fclose (outf);
+	}
+}
+
 Update_t CmdSymbolsSave (int nArgs)
 {
 	char sFileName[MAX_PATH];
@@ -1070,21 +1101,7 @@ Update_t CmdSymbolsSave (int nArgs)
 	}
 
 	if (pFileName) {
-		FILE *outf = fopen (sFileName, "wt");
-		int nSymbols = g_aSymbols[iSymbolTable].size();
-		if (outf && nSymbols)
-		{
-			fprintf (outf, "; %s : %d symbols defined.\n", pFileName, nSymbols);
-			SymbolTable_t :: iterator  iSymbol = g_aSymbols[iSymbolTable].begin();
-			while (iSymbol != g_aSymbols[iSymbolTable].end())
-			{
-				const char *pSymbol = iSymbol->second.c_str();
-				unsigned short nAddress = iSymbol->first;
-				fprintf (outf, "%04X %s\n", nAddress&0xffff, pSymbol);
-				++iSymbol;
-			}
-		}
-		fclose (outf);
+	  SymbolsSave (sFileName, CMD_SYMBOLS_ROM + iSymbolTable);
   	ConsoleBufferPush( TEXT( "Saved." ) );
 	}
 	
