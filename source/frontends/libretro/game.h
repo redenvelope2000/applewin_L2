@@ -40,7 +40,9 @@ namespace ra2
 
     const int WARM_UP_RESET_FRAMES = 8;
     bool warm_up_reset_done = false;
-
+    
+    static void set_cpu_speed_num (int num);
+    
   private:
     // keep them in this order!
     std::shared_ptr<LoggerContext> myLoggerContext;
@@ -60,6 +62,7 @@ namespace ra2
     DiskControl myDiskControl;
     
     uint8_t framecounter;
+    static int cpu_speed_num;
 
     bool checkButtonPressed(unsigned id);
     void keyboardEmulation();

@@ -283,7 +283,7 @@ void retro_set_input_state(retro_input_state_t cb)
   ra2::input_state_cb = cb;
 }
 
-static void update_retro_vars ()
+void update_retro_vars ()
 {
   ra2::SetupRetroVariables();
 

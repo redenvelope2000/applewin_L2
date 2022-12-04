@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "frontends/libretro/retroframe.h"
 #include "frontends/libretro/environment.h"
+#include "frontends/libretro/gui.h"
 
 #include "Interface.h"
 #include "Core.h"
@@ -109,21 +110,36 @@ namespace ra2
 
       video_cb(debugger_framebuffer, debugger_framebuffer_width, debugger_framebuffer_height, debugger_framebuffer_pitch);
 
+    } else if (g_nAppMode == MODE_GUI) {
+
+      video_cb(gui_framebuffer, gui_framebuffer_width, gui_framebuffer_height, gui_framebuffer_pitch);
+
     } else {
       // this should not be necessary
       // either libretro handles it
       // or we should change AW
       // but for now, there is no alternative
-      for (size_t row = 0; row < myHeight; ++row)
-      {
-        const uint8_t * src = myFrameBuffer + row * myPitch;
-        uint8_t * dst = myVideoBuffer.data() + (myHeight - row - 1) * myPitch;
-        memcpy(dst, src, myPitch);
+      uint8_t *src, *dst;
+      src = myFrameBuffer + myOffset;
+      int new_pitch = myBorderlessWidth * sizeof(bgra_t);
+      int width = myBorderlessWidth;
+      int height = myBorderlessHeight;
+      int pitch = new_pitch;
+      dst = myVideoBuffer.data();
+      for (int y=0; y<myBorderlessHeight; y++) {
+        memcpy (&dst[y * new_pitch],
+                &src[(myBorderlessHeight - y) * myPitch],  // src image is upside down.
+                new_pitch);
       }
-      video_cb(myVideoBuffer.data() + myOffset, myBorderlessWidth, myBorderlessHeight/2, myPitch*2);
+      video_cb (dst+new_pitch, width, height/2, new_pitch*2);
     }
   }
 
+  void *RetroFrame::FrameBuffer ()
+  {
+    return myVideoBuffer.data();
+  }
+    
   void RetroFrame::Initialize(bool resetVideoState)
   {
     CommonFrame::Initialize(resetVideoState);

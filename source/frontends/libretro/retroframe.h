@@ -21,6 +21,7 @@ namespace ra2
     int FrameMessageBox(LPCSTR lpText, LPCSTR lpCaption, UINT uType) override;
     void GetBitmap(LPCSTR lpBitmapName, LONG cb, LPVOID lpvBits) override;
     void *CopyFrameBufferContents (int *width, int *height, int *pitch);
+    void *FrameBuffer ();
 
   private:
     std::vector<uint8_t> myVideoBuffer;

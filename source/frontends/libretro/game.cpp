@@ -2,6 +2,7 @@
 #include "frontends/libretro/game.h"
 #include "frontends/libretro/retroregistry.h"
 #include "frontends/libretro/retroframe.h"
+#include "frontends/libretro/gui.h"
 
 #include "Common.h"
 #include "CardManager.h"
@@ -119,10 +120,19 @@ namespace ra2
         return true;
         break;
       case RETROK_F7:  // Enter debugger key
+        if (g_nAppMode != MODE_GUI) {
+          log_cb(RETRO_LOG_INFO, "RA2: %s - add F7 debug key\n", __FUNCTION__);
+          putKeyInBuffer(VK_DEBUG);
+        } else {
+          log_cb(RETRO_LOG_INFO, "RA2: %s - ignored F7 debug key\n", __FUNCTION__);
+        }
+        return true;
+        break;
+      case RETROK_F8:  // GUI key
       case RETROK_MENU:
-      //case RETROK_RMETA:
-        log_cb(RETRO_LOG_INFO, "RA2: %s - add F7 debug key\n", __FUNCTION__);
-        putKeyInBuffer(VK_DEBUG);
+      case RETROK_RMETA:
+        log_cb(RETRO_LOG_INFO, "RA2: %s - add F8 GUI key\n", __FUNCTION__);
+        putKeyInBuffer(VK_GUI);
         return true;
         break;
       case RETROK_F9:  // Change display output mode
@@ -178,6 +188,7 @@ namespace ra2
   	  "diskette_in.wav",            //03 
   	  "diskette_out.wav",           //04 
   	  "diskette_out_in.wav",        //05 
+  	  "duck-quack.wav",             //06
   	  NULL};
   	//std::string pcm_wave_resource_file("resource.zip");
   	//pcm_wave_resource_file = myFrame->getResourcePath(pcm_wave_resource_file);
@@ -192,6 +203,10 @@ namespace ra2
     myMouse[1] = {0.0, 0.75 / video.GetFrameBufferBorderlessHeight(), RETRO_DEVICE_ID_MOUSE_Y};
     framecounter = 0;
     memset (direction_keys_pressed, 0, sizeof(direction_keys_pressed));
+    
+    set_cpu_speed_num (10); // 1.0 Mhz
+
+    init_gui ();
   }
 
   Game::~Game()
@@ -203,6 +218,7 @@ namespace ra2
     Quit_Diskset ();
     quit_wave_pcm ();
     quit_mem_FILE ();
+    quit_gui ();
     
   }
 
@@ -240,6 +256,11 @@ namespace ra2
         }
         log_cb(RETRO_LOG_INFO, "RA2: %s - debugger key...%x\n", __FUNCTION__, preview_key);
         break;
+      case VK_GUI:
+        ClearKeyBuffer ();
+        switch_gui_mode ();
+        log_cb(RETRO_LOG_INFO, "RA2: %s - gui key...%x\n", __FUNCTION__, preview_key);
+        break;
       case VK_DISPLAY:
         ClearKeyBuffer ();
 				GetVideo().IncVideoType();
@@ -251,7 +272,7 @@ namespace ra2
         new_clipboard_data ();
         break;
       case VK_COPY:
-        if (KeybGetShiftStatus() || !GetVideo().VideoGetSWTEXT()) { // Copy graphics screen.
+        if (KeybGetShiftStatus() || (!GetVideo().VideoGetSWTEXT() && !(g_nAppMode == MODE_DEBUG))) { // Copy graphics screen.
           int width, height, pitch;
           uint32_t *data = (uint32_t *) myFrame->CopyFrameBufferContents (&width, &height, &pitch);
           put_image_to_clipboard (data, width, height, pitch);
@@ -341,7 +362,7 @@ namespace ra2
       } else {
         const bool bVideoUpdate = true;
         const UINT dwClksPerFrame = NTSC_GetCyclesPerFrame();
-        uint64_t cyclesToExecute = NTSC_GetCyclesPerFrame();
+        uint64_t cyclesToExecute = cpu_speed_num * dwClksPerFrame / 10;
 
 	      //bool g_bFullSpeed =	 (g_dwSpeed == SPEED_MAX) || 
 				//	 bScrollLock_FullSpeed ||
@@ -349,7 +370,7 @@ namespace ra2
 				//	 IsDebugSteppingAtFullSpeed();
 				
         bool diskFullSpeed = GetCardMgr().GetDisk2CardMgr().IsConditionForFullSpeed();
-        if (diskFullSpeed && !Spkr_IsActive()) cyclesToExecute*=10; // 10 times Apple II speed.
+        if (diskFullSpeed && !Spkr_IsActive()) cyclesToExecute = dwClksPerFrame * 10; // 10 times Apple II speed.
 				g_SingleStepping_Cycles = 0;
         do {
           DebugContinueStepping ();
@@ -367,13 +388,17 @@ namespace ra2
     } else if (g_nAppMode == MODE_RUNNING) {
       const bool bVideoUpdate = true;
       const UINT dwClksPerFrame = NTSC_GetCyclesPerFrame();
-      uint64_t cyclesToExecute = dwClksPerFrame;
+      uint64_t cyclesToExecute = cpu_speed_num * dwClksPerFrame / 10;
       bool diskFullSpeed = GetCardMgr().GetDisk2CardMgr().IsConditionForFullSpeed();
-      if (diskFullSpeed && !Spkr_IsActive()) cyclesToExecute*=10; // 10 times Apple II speed.
+      if (diskFullSpeed && !Spkr_IsActive()) cyclesToExecute = dwClksPerFrame * 10; // 10 times Apple II speed.
       const DWORD executedCycles = CpuExecute(cyclesToExecute, bVideoUpdate);
       g_dwCyclesThisFrame = (g_dwCyclesThisFrame + executedCycles) % dwClksPerFrame;
       GetCardMgr().Update(executedCycles);
       int generated = SpkrUpdate(executedCycles);        
+    } else if (g_nAppMode == MODE_GUI) {
+      
+      run_gui (myFrame->FrameBuffer ());
+
     }
   }
 
@@ -410,7 +435,7 @@ namespace ra2
         break;
       //case RETROK_x:
       case RETROK_LMETA:
-      case RETROK_RMETA:
+      //case RETROK_RMETA:
       case RETROK_LALT:
         if (Paddle::instance) Paddle::setButtonPressed(Paddle::ourOpenApple);
         break;
@@ -495,6 +520,9 @@ namespace ra2
         addKeyToBuffer(ch | (keycode<<16));
         log_cb(RETRO_LOG_INFO, "RA2: %s - debug mode %d=>$%02x %x (%d,%d,%d)\n", __FUNCTION__, keycode, ch, key_modifiers, KeybGetShiftStatus(), KeybGetCtrlStatus(), KeybGetAltStatus());
       }
+    } else if (g_nAppMode == MODE_GUI) {
+      
+      
     }
     
   }
@@ -511,7 +539,7 @@ namespace ra2
         break;
       //case RETROK_x:
       case RETROK_LMETA:
-      case RETROK_RMETA:
+      //case RETROK_RMETA:
       case RETROK_LALT:
         if (Paddle::instance) Paddle::setButtonReleased(Paddle::ourOpenApple);
         break;
@@ -574,12 +602,19 @@ namespace ra2
 
   void Game::mouseEmulation()
   {
-    for (auto & mouse : myMouse)
-    {
-      const int16_t x = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, mouse.id);
-      mouse.position += x * mouse.multiplier;
-      mouse.position = std::min(1.0, std::max(mouse.position, -1.0));
+    const int16_t x = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, myMouse[0].id);
+    if (x) {
+      myMouse[0].position += x * myMouse[0].multiplier;
+      myMouse[0].position = std::min(1.0, std::max(myMouse[0].position, -1.0));
+      if (Paddle::instance) Paddle::instance->putAxis(0, myMouse[0].position);
     }
+    const int16_t y = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, myMouse[1].id);
+    if (y) {
+      myMouse[1].position += y * myMouse[1].multiplier;
+      myMouse[1].position = std::min(1.0, std::max(myMouse[1].position, -1.0));
+      if (Paddle::instance) Paddle::instance->putAxis(1, myMouse[1].position);
+    }
+    
   }
 
   double Game::getMousePosition(int i) const
@@ -597,6 +632,12 @@ namespace ra2
   DiskControl & Game::getDiskControl()
   {
     return myDiskControl;
+  }
+  
+  int Game::cpu_speed_num;
+  void Game::set_cpu_speed_num (int num)
+  {
+    cpu_speed_num = num;
   }
 
 }
