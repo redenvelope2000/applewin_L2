@@ -138,6 +138,10 @@ ifeq ($(HAS_CLIPBOARD_LIB),1)
 else
   SOURCES_CXX += $(LIBRETRO_DIR)/dummy_clipboard.cpp
 endif
+  SOURCES_CXX += $(LIBRETRO_DIR)/gui.cpp
+  SOURCES_CXX += $(LIBRETRO_DIR)/nukleargui/app.cpp
+  SOURCES_CXX += $(LIBRETRO_DIR)/nukleargui/retro/retro_surface.cpp
+  SOURCES_CXX += $(LIBRETRO_DIR)/nukleargui/retro/SDL_gfxPrimitives.cpp
 # frontends lib
   SOURCES_CXX += $(SOURCE_DIR)/frontends/common2/commonframe.cpp
   #SOURCES_CXX += $(SOURCE_DIR)/frontends/common2/gnuframe.cpp

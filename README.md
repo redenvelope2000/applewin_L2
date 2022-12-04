@@ -22,6 +22,7 @@ Mockingboard PSG sounds.
 DISK II floppy drive operating sounds.
 Clipboard operation for text strings and the graphics screen. Use Ctrl/Shift-Ins on Windows, Cmd-C/Cmd-V on macOS.
 Save/Restore.
+Nuklear GUI (https://github.com/Immediate-Mode-UI/Nuklear). Press F8 key/MENU key/Right-Cmd key to enter it.
 
 Not-working functions:
 Uthernet
