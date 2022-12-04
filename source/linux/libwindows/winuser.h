@@ -65,3 +65,4 @@ void        WINAPI PostQuitMessage(INT);
 #define VK_RESET          0x8103
 #define VK_DEBUG          0x8104
 #define VK_DISPLAY        0x8105
+#define VK_GUI            0x8106
