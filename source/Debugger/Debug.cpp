@@ -7641,12 +7641,19 @@ static bool IsFileNameInAbsolutePath (char *name)
           name[0] =='\\' || 
           (isalpha(name[0]) && name[1] == ':' && (name[2] == '/' || name[2] == '\\'))); // The file name has an absolute path.
 }
-static int  Insert_Diskette (int drvnum, char *fn, bool silence_flag)
+void Eject_Diskette (int drvnum, bool silence_flag)
+{
+	Disk2InterfaceCard& diskCard = dynamic_cast<Disk2InterfaceCard&>(GetCardMgr().GetRef(SLOT6));
+	diskCard.EjectDisk( drvnum );
+	if (!silence_flag) {
+		write_wave_pcm_reg(WAVE_PCM_SUPER_CH, 0x4);
+	}
+}
+int  Insert_Diskette (int drvnum, char *fn, bool silence_flag)
 {
 	char * name = fn;
 	ImageError_e res;
 	char sText[ CONSOLE_WIDTH ];
-
 	char *folder = DisksetFolder ();
 	if ((!IsFileNameInAbsolutePath (fn)) // The file name does not have an absolute path.
 		&& folder != NULL) {
