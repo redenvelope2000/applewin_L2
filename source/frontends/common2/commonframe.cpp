@@ -40,7 +40,6 @@ namespace common2
 #endif
   , myResourceFolder(getResourceFolder("AppleWin/"))
   {
-    // should this go down to LinuxFrame (maybe Initialisation?)
     g_sProgramDir = getResourceFolder("AppleWin/");
     g_sCurrentDir = myHomeDir + "/Documents/AppleWin/";
     g_sUserDocDir = myHomeDir + "/Documents/AppleWin/";
