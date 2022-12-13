@@ -639,5 +639,9 @@ namespace ra2
   {
     cpu_speed_num = num;
   }
+  int Game::get_cpu_speed_num ()
+  {
+    return cpu_speed_num;
+  }
 
 }

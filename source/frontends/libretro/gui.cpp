@@ -194,6 +194,7 @@ int update_gui_setup_data ()
   disk_name = diskCard.GetFullName(drvnum).c_str();
   gui_setup_data.drive2 = search_diskset_items (disk_name && strlen (disk_name) > 0 ?disk_name : EMPTY_DRIVE);
 
+  gui_setup_data.cpu_speed = ra2::Game::get_cpu_speed_num ();
 
   return 0;
 }

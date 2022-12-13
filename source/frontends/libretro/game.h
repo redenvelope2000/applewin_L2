@@ -42,6 +42,7 @@ namespace ra2
     bool warm_up_reset_done = false;
     
     static void set_cpu_speed_num (int num);
+    static int get_cpu_speed_num ();
     
   private:
     // keep them in this order!
