@@ -346,6 +346,9 @@ bool retro_load_game(const retro_game_info *info)
       if (endsWith(gamePath, snapshotEnding))
       {
         ok = game->loadSnapshot(gamePath);
+        if (ok) {
+          game->warm_up_reset_done = true; // Skip warm up reset for snap shots.
+        }
       }
       else if (endsWith(gamePath, playlistEnding))
       {
